@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PNJunction</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='16' height='32' fill='%23eb6834'/%3E%3Crect x='16' width='16' height='32' fill='%232a78d6'/%3E%3C/svg%3E">
+<style>
+:root {
+  --bg: #f4f3f0; --panel: #fcfcfb; --panel-2: #efeee9; --border: #dcdad3;
+  --text: #0b0b0b; --text-2: #52514e; --muted: #7a7974; --accent: #2a78d6; --accent-ink: #ffffff;
+  --warn-bg: #fff4dc; --warn-border: #eda100; --info-bg: #e8f1fc; --info-border: #2a78d6;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #008300; --s7: #6250d6; --s8: #e34948;
+  --neutral: #8a8984; --grid: rgba(120,120,120,0.16); --shade: rgba(120,120,120,0.10);
+  --radius: 10px; --mono: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121211; --panel: #1a1a19; --panel-2: #242422; --border: #34332f;
+    --text: #f0efec; --text-2: #c3c2b7; --muted: #8f8e86; --accent: #3987e5; --accent-ink: #ffffff;
+    --warn-bg: #33290f; --warn-border: #c98500; --info-bg: #14243a; --info-border: #3987e5;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+    --neutral: #9a998f; --grid: rgba(200,200,190,0.12); --shade: rgba(200,200,190,0.08);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121211; --panel: #1a1a19; --panel-2: #242422; --border: #34332f;
+  --text: #f0efec; --text-2: #c3c2b7; --muted: #8f8e86; --accent: #3987e5; --accent-ink: #ffffff;
+  --warn-bg: #33290f; --warn-border: #c98500; --info-bg: #14243a; --info-border: #3987e5;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+  --neutral: #9a998f; --grid: rgba(200,200,190,0.12); --shade: rgba(200,200,190,0.08);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { background: var(--bg); color: var(--text); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.app { display: grid; grid-template-columns: 330px 1fr; min-height: 100vh; }
+aside { background: var(--panel); border-right: 1px solid var(--border); padding: 18px 18px 40px; overflow-y: auto; height: 100vh; position: sticky; top: 0; }
+main { padding: 22px 28px 60px; min-width: 0; }
+.brand { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+.brand-mark { width: 30px; height: 30px; border-radius: 7px; overflow: hidden; display: flex; flex: none; }
+.brand-mark i { flex: 1; } .brand-mark i:first-child { background: var(--s2); } .brand-mark i:last-child { background: var(--s1); }
+.brand h1 { font-size: 20px; margin: 0; letter-spacing: -0.01em; }
+.brand-sub { color: var(--muted); font-size: 12px; margin: 0 0 14px; }
+.theme-btn { margin-left: auto; background: var(--panel-2); border: 1px solid var(--border); color: var(--text-2); border-radius: 8px; padding: 4px 8px; cursor: pointer; font: inherit; font-size: 12px; }
+h2.sec { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 18px 0 8px; font-weight: 600; }
+.field { margin-bottom: 12px; }
+.field > label, .lbl { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; color: var(--text-2); margin-bottom: 4px; gap: 8px; }
+.val { font-variant-numeric: tabular-nums; font-size: 12px; color: var(--text); white-space: nowrap; }
+.seg { display: flex; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 2px; gap: 2px; }
+.seg button { flex: 1; border: 0; background: transparent; color: var(--text-2); padding: 6px 8px; border-radius: 6px; cursor: pointer; font: inherit; font-size: 13px; }
+.seg button.on { background: var(--panel); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,0.12); font-weight: 600; }
+.seg button:disabled { opacity: 0.4; cursor: not-allowed; }
+select, input[type=number], input[type=text] { width: 100%; background: var(--panel-2); color: var(--text); border: 1px solid var(--border); border-radius: 7px; padding: 6px 8px; font: inherit; font-size: 13px; }
+input[type=range] { width: 100%; accent-color: var(--accent); margin: 2px 0; }
+.rangebox { display: grid; grid-template-columns: 1fr 86px; gap: 8px; align-items: center; }
+.rangebox input[type=number] { padding: 4px 6px; font-family: var(--mono); font-size: 12px; }
+.check { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--text-2); margin: 6px 0; cursor: pointer; }
+details { border: 1px solid var(--border); border-radius: 8px; margin: 8px 0; background: var(--panel); }
+details > summary { cursor: pointer; padding: 8px 10px; font-size: 13px; color: var(--text-2); list-style: none; }
+details > summary::before { content: "▸ "; } details[open] > summary::before { content: "▾ "; }
+details > .inner { padding: 4px 10px 10px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.grid2 label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 2px; }
+.btn { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); border-radius: 7px; padding: 6px 10px; cursor: pointer; font: inherit; font-size: 13px; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btnrow { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.hint { font-size: 12px; color: var(--muted); }
+header.top h2 { font-size: 26px; margin: 0 0 4px; letter-spacing: -0.015em; }
+header.top p { margin: 0 0 14px; color: var(--muted); font-size: 13px; }
+.alert { border-left: 4px solid var(--warn-border); background: var(--warn-bg); padding: 8px 12px; border-radius: 6px; margin: 6px 0; font-size: 13px; }
+.alert b { margin-right: 4px; }
+.info { border-left: 4px solid var(--info-border); background: var(--info-bg); padding: 8px 12px; border-radius: 6px; margin: 10px 0; font-size: 13px; }
+nav.tabs { display: flex; flex-wrap: wrap; max-width: 100%; gap: 2px; border-bottom: 1px solid var(--border); margin: 14px 0 16px; }
+nav.tabs button { background: none; border: 0; border-bottom: 2px solid transparent; color: var(--text-2); padding: 8px 12px; cursor: pointer; font: inherit; font-size: 14px; margin-bottom: -1px; }
+nav.tabs button.on { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+.tab { display: none; } .tab.on { display: block; }
+.cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 12px; }
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; }
+.card .k { font-size: 12px; color: var(--muted); }
+.card .v { font-size: 22px; font-weight: 600; margin-top: 2px; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.card .v small { font-size: 13px; font-weight: 500; color: var(--text-2); margin-left: 3px; }
+.panel { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; margin-bottom: 14px; }
+.panel h3 { font-size: 14px; margin: 2px 0 6px; font-weight: 600; }
+.chart { width: 100%; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+table.data { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.data th, table.data td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+table.data th { color: var(--muted); font-weight: 600; font-size: 12px; background: var(--panel-2); position: sticky; top: 0; }
+table.data td.num { font-variant-numeric: tabular-nums; font-size: 13px; white-space: nowrap; }
+.tablewrap { overflow: auto; max-height: 640px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel); }
+.eq { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 12px; }
+.eq h3 { margin: 0 0 8px; font-size: 14px; }
+.eq .f { font-family: "Cambria Math", "STIX Two Math", "Times New Roman", serif; font-size: 17px; margin: 6px 0; overflow-x: auto; }
+.eq .f i { font-style: italic; }
+.ctrlrow { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; margin-bottom: 10px; }
+.ctrlrow > div { min-width: 180px; flex: 1; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--border); background: var(--panel-2); color: var(--text-2); border-radius: 999px; padding: 4px 10px; cursor: pointer; font: inherit; font-size: 12px; }
+.chip.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+footer { color: var(--muted); font-size: 12px; margin-top: 24px; }
+@media (max-width: 1100px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } .row2 { grid-template-columns: 1fr; } }
+@media (max-width: 820px) {
+  .app { grid-template-columns: 1fr; }
+  aside { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+  main { padding: 16px; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+  <div class="brand">
+    <div class="brand-mark" aria-hidden="true"><i></i><i></i></div>
+    <h1>PNJunction</h1>
+    <button class="theme-btn" id="themeBtn" title="Toggle light/dark theme">Light / Dark</button>
+  </div>
+  <p class="brand-sub">Offline p–n homo/heterojunction explorer</p>
+
+  <h2 class="sec">Junction</h2>
+  <div class="field"><div class="lbl">Junction type</div>
+    <div class="seg" id="jtype"><button data-v="homo" class="on">Homojunction</button><button data-v="hetero">Heterojunction</button></div></div>
+  <div class="field"><div class="lbl">Doping profile</div>
+    <div class="seg" id="profile"><button data-v="abrupt" class="on" title="Abrupt step junction">Abrupt</button><button data-v="graded" title="Linearly graded junction (homojunction only)">Graded</button><button data-v="pin" title="p–i–n: intrinsic layer between p and n">p–i–n</button></div></div>
+
+  <h2 class="sec">Materials</h2>
+  <div class="field"><label for="pmat"><span id="pmatLbl">Material</span></label><select id="pmat"></select></div>
+  <div class="field" id="pxRow"><label>Mole fraction x <span class="val" id="pxVal"></span></label><input type="range" id="px" min="0" max="1" step="0.01" value="0.3"></div>
+  <div id="imatBlock">
+    <div class="field"><label for="imat">i-layer material</label><select id="imat"></select></div>
+    <div class="field" id="ixRow"><label>Mole fraction x <span class="val" id="ixVal"></span></label><input type="range" id="ix" min="0" max="1" step="0.01" value="0.15"></div>
+  </div>
+  <div id="nmatBlock">
+    <div class="field"><label for="nmat">n-side material</label><select id="nmat"></select></div>
+    <div class="field" id="nxRow"><label>Mole fraction x <span class="val" id="nxVal"></span></label><input type="range" id="nx" min="0" max="1" step="0.01" value="0.3"></div>
+  </div>
+
+  <h2 class="sec">Doping</h2>
+  <div id="abruptDoping">
+    <div class="field"><label><span>N<sub>A</sub> (p-side)</span> <span class="val" id="NAval"></span></label>
+      <div class="rangebox"><input type="range" id="lNA" min="13" max="21" step="0.05" value="17"><input type="number" id="lNAn" min="13" max="21" step="0.05" value="17" title="log10 NA"></div></div>
+    <div class="field"><label><span>N<sub>D</sub> (n-side)</span> <span class="val" id="NDval"></span></label>
+      <div class="rangebox"><input type="range" id="lND" min="13" max="21" step="0.05" value="16"><input type="number" id="lNDn" min="13" max="21" step="0.05" value="16" title="log10 ND"></div></div>
+    <div class="hint">Slider and box are log₁₀ of the density in cm⁻³.</div>
+  </div>
+  <div id="pinRow">
+    <div class="field" style="margin-top:12px"><label><span>i-layer thickness d</span> <span class="val" id="dVal"></span></label>
+      <div class="rangebox"><input type="range" id="ld" min="-2" max="2.5" step="0.01" value="0"><input type="number" id="ldn" min="-2" max="2.5" step="0.01" value="0" title="log10 d (µm)"></div>
+      <div class="hint">log₁₀ of d in µm. The i-layer is taken as ideal (no net space charge).</div></div>
+  </div>
+  <div id="gradedDoping" hidden>
+    <div class="field"><label>Grading constant a <span class="val" id="gradVal"></span></label>
+      <div class="rangebox"><input type="range" id="lgrad" min="18" max="26" step="0.05" value="22"><input type="number" id="lgradn" min="18" max="26" step="0.05" value="22"></div>
+      <div class="hint">N<sub>D</sub> − N<sub>A</sub> = a·x  (log₁₀ of a in cm⁻⁴)</div></div>
+  </div>
+
+  <h2 class="sec">Operating point</h2>
+  <div class="field"><label>Temperature T <span class="val" id="Tval"></span></label>
+    <div class="rangebox"><input type="range" id="T" min="50" max="900" step="1" value="300"><input type="number" id="Tn" min="50" max="900" step="1" value="300"></div></div>
+  <div class="field"><label>Applied bias V (forward &gt; 0) <span class="val" id="Vval"></span></label>
+    <div class="rangebox"><input type="range" id="V" min="-20" max="7" step="0.01" value="0"><input type="number" id="Vn" min="-20000" max="7" step="0.01" value="0"></div></div>
+  <div class="field"><label for="vrev">Reverse range of bias slider (V)</label><input type="number" id="vrev" min="1" max="20000" step="5" value="20"></div>
+
+  <details id="modelsBox"><summary>Physics models</summary><div class="inner">
+    <label class="check"><input type="checkbox" id="incomplete"> Incomplete dopant ionization</label>
+    <div class="hint" style="margin:-2px 0 8px 24px">Matters for deep dopants: Mg in GaN/AlGaN, Al in SiC, B/P in diamond.</div>
+    <div class="field"><div class="lbl">Carrier statistics</div>
+      <div class="seg" id="stats"><button data-v="Boltzmann" class="on">Boltzmann</button><button data-v="Fermi-Dirac">Fermi–Dirac</button></div></div>
+    <div class="field"><label for="area">Device area (µm²)</label><input type="number" id="area" min="1" step="100" value="10000"></div>
+    <label class="check"><input type="checkbox" id="useTau"> Override minority lifetimes</label>
+    <div id="tauBox" hidden>
+      <div class="field"><label><span>τ<sub>n</sub> (p-side)</span> <span class="val" id="taunVal"></span></label><input type="range" id="ltaun" min="-12" max="-3" step="0.1" value="-9"></div>
+      <div class="field"><label><span>τ<sub>p</sub> (n-side)</span> <span class="val" id="taupVal"></span></label><input type="range" id="ltaup" min="-12" max="-3" step="0.1" value="-9"></div>
+    </div>
+  </div></details>
+
+  <h2 class="sec">Material overrides</h2>
+  <details id="ovP"><summary id="ovPsum">Edit material parameters</summary><div class="inner" id="ovPin"></div></details>
+  <details id="ovN"><summary id="ovNsum">Edit n-side parameters</summary><div class="inner" id="ovNin"></div></details>
+
+  <h2 class="sec">Configuration</h2>
+  <div class="btnrow">
+    <button class="btn" id="saveCfg">Save settings…</button>
+    <label class="btn" for="loadCfg" style="display:inline-block">Load settings…</label>
+    <input type="file" id="loadCfg" accept=".json,application/json" hidden>
+    <button class="btn" id="resetCfg">Reset all</button>
+  </div>
+</aside>
+
+<main>
+  <header class="top"><h2 id="title">—</h2><p id="subtitle"></p></header>
+  <div id="warnings"></div>
+  <nav class="tabs" id="tabs">
+    <button data-t="summary" class="on">Summary</button><button data-t="band">Band diagram</button>
+    <button data-t="es">Electrostatics</button><button data-t="carriers">Carriers</button>
+    <button data-t="ivcv">I–V &amp; C–V</button><button data-t="temp">Temperature</button>
+    <button data-t="sweep">Parametric sweep</button><button data-t="lib">Material library</button>
+    <button data-t="eq">Equations</button>
+  </nav>
+
+  <section class="tab on" id="tab-summary">
+    <div class="cards" id="cards"></div>
+    <div id="offsets"></div>
+    <div class="panel" style="overflow-x:auto"><h3>Side-by-side properties</h3><table class="data" id="sideTable"></table></div>
+    <p class="hint" id="jnote"></p>
+    <div class="btnrow"><button class="btn" id="dlJson">Download results (JSON)</button><button class="btn" id="dlCsv">Download spatial profiles (CSV)</button></div>
+  </section>
+
+  <section class="tab" id="tab-band">
+    <label class="check"><input type="checkbox" id="showVac"> Show vacuum level</label>
+    <div class="panel"><div class="chart" id="chBand"></div></div>
+    <p class="hint">Shaded region = depletion region. Energy reference: Fermi level of the neutral p-side = 0 eV. Under bias the quasi-Fermi levels are drawn flat across the depletion region and separate by qV.</p>
+  </section>
+
+  <section class="tab" id="tab-es">
+    <div class="panel"><h3>Space-charge density ρ/q (cm⁻³)</h3><div class="chart" id="chRho"></div></div>
+    <div class="panel"><h3>Electric field E (kV/cm)</h3><div class="chart" id="chE"></div></div>
+    <div class="panel"><h3>Electrostatic potential φ (V)</h3><div class="chart" id="chPhi"></div></div>
+    <p class="hint">E is negative (points from n to p). In a heterojunction E is discontinuous at x = 0 because the displacement D = εE is continuous.</p>
+  </section>
+
+  <section class="tab" id="tab-carriers">
+    <div class="panel"><div class="chart" id="chCar"></div></div>
+    <p class="hint" id="carNote"></p>
+  </section>
+
+  <section class="tab" id="tab-ivcv">
+    <div class="ctrlrow">
+      <div><label class="lbl" for="ivF">Max forward bias for I–V (V)</label><input type="number" id="ivF" min="0.05" max="8" step="0.05"></div>
+      <div><label class="lbl" for="ivR">Max reverse bias for I–V / C–V (V)</label><input type="number" id="ivR" min="0.1" max="20000" step="1"></div>
+      <div><label class="check"><input type="checkbox" id="ivLin"> Linear current axis (forward only)</label></div>
+    </div>
+    <div class="panel"><h3>Current density |J| (A/cm²)</h3><div class="chart" id="chIV"></div></div>
+    <p class="hint">Ideal Shockley diffusion (n = 1) + SRH depletion-region generation/recombination (n = 2). Series resistance, high injection and tunneling are not modelled.</p>
+    <div class="row2">
+      <div class="panel"><h3>Capacitance C/A (nF/cm²)</h3><div class="chart" id="chC"></div></div>
+      <div class="panel"><h3>Mott–Schottky 1/C² (cm⁴/F²)</h3><div class="chart" id="chC2"></div></div>
+    </div>
+    <p class="hint" id="cvNote"></p>
+  </section>
+
+  <section class="tab" id="tab-temp">
+    <div class="field"><div class="lbl">Materials to compare</div><div class="chips" id="tempChips"></div></div>
+    <div class="row2">
+      <div class="panel"><h3>Band gap E<sub>g</sub>(T)</h3><div class="chart" id="chEgT"></div></div>
+      <div class="panel"><h3>Intrinsic density n<sub>i</sub> vs 1000/T</h3><div class="chart" id="chNiT"></div></div>
+    </div>
+    <h3 style="margin:10px 0 4px">This junction versus temperature</h3>
+    <p class="hint">Fermi level of each neutral side relative to its own E<sub>v</sub>. Enable incomplete ionization to see freeze-out at low T; at high T E<sub>F</sub> approaches E<sub>i</sub> (intrinsic regime).</p>
+    <div class="row2">
+      <div class="panel"><h3>p-side</h3><div class="chart" id="chEFp"></div></div>
+      <div class="panel"><h3>n-side</h3><div class="chart" id="chEFn"></div></div>
+    </div>
+    <div class="row2">
+      <div class="panel"><h3>Built-in voltage V<sub>bi</sub>(T)</h3><div class="chart" id="chVbiT"></div></div>
+      <div class="panel"><h3>Depletion width W(T) at V = 0 (µm)</h3><div class="chart" id="chWT"></div></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-sweep">
+    <p class="hint">Sweep one input while holding the rest at the sidebar values. Each output gets its own chart.</p>
+    <div class="ctrlrow">
+      <div><label class="lbl" for="swVar">Swept variable</label><select id="swVar"></select></div>
+      <div><label class="lbl" for="swLo">From</label><input type="number" id="swLo" step="any"></div>
+      <div><label class="lbl" for="swHi">To</label><input type="number" id="swHi" step="any"></div>
+      <div><label class="lbl" for="swN">Points</label><input type="number" id="swN" min="5" max="400" value="60"></div>
+    </div>
+    <div class="field"><div class="lbl">Outputs</div><div class="chips" id="swOuts"></div></div>
+    <div class="row2" id="swCharts"></div>
+    <div class="btnrow"><button class="btn" id="dlSweep">Download sweep (CSV)</button></div>
+  </section>
+
+  <section class="tab" id="tab-lib">
+    <div class="ctrlrow">
+      <div><label class="lbl" for="libT">Table temperature (K)</label><input type="number" id="libT" min="50" max="900" step="10" value="300"></div>
+      <div><label class="lbl">AlGaN x <span class="val" id="libXaV"></span></label><input type="range" id="libXa" min="0" max="1" step="0.01" value="0.3"></div>
+      <div><label class="lbl">InGaN x <span class="val" id="libXiV"></span></label><input type="range" id="libXi" min="0" max="1" step="0.01" value="0.15"></div>
+    </div>
+    <div class="tablewrap"><table class="data" id="libTable"></table></div>
+    <p class="hint">Mobilities at N = 10¹⁵ cm⁻³. Baliga FOM = εμE<sub>c</sub>³ and Johnson FOM = E<sub>c</sub>·v<sub>sat</sub>, both normalized to Si. Values are representative literature data (Ioffe NSM, Sze &amp; Ng, Vurgaftman 2001); diamond, c-BN and the alloys carry significant uncertainty — edit them per side in the sidebar.</p>
+    <div class="btnrow"><button class="btn" id="dlLib">Download library (CSV)</button></div>
+    <div class="panel" style="margin-top:14px"><h3>III-nitride alloy band gap (with bowing)</h3><div class="chart" id="chAlloy"></div></div>
+  </section>
+
+  <section class="tab" id="tab-eq">
+    <div class="eq"><h3>Intrinsic properties</h3>
+      <div class="f"><i>E</i><sub>g</sub>(<i>T</i>) = <i>E</i><sub>g0</sub> − α<i>T</i>² / (<i>T</i> + β)   (Varshni)</div>
+      <div class="f"><i>N</i><sub>c,v</sub> = 2.509×10¹⁹ (<i>m</i>*)<sup>3/2</sup> (<i>T</i>/300)<sup>3/2</sup> cm⁻³,   <i>n</i><sub>i</sub> = √(<i>N</i><sub>c</sub><i>N</i><sub>v</sub>) · exp(−<i>E</i><sub>g</sub>/2<i>kT</i>)</div>
+      <div class="f"><i>E</i><sub>i</sub> = (<i>E</i><sub>c</sub> + <i>E</i><sub>v</sub>)/2 + (<i>kT</i>/2) ln(<i>N</i><sub>v</sub>/<i>N</i><sub>c</sub>)</div></div>
+    <div class="eq"><h3>Fermi level (solved numerically from charge neutrality)</h3>
+      <div class="f"><i>p</i> + <i>N</i><sub>D</sub><sup>+</sup> = <i>n</i> + <i>N</i><sub>A</sub><sup>−</sup>,   <i>N</i><sub>D</sub><sup>+</sup> = <i>N</i><sub>D</sub> / [1 + 2 exp((<i>E</i><sub>F</sub> − <i>E</i><sub>D</sub>)/<i>kT</i>)],   <i>N</i><sub>A</sub><sup>−</sup> = <i>N</i><sub>A</sub> / [1 + 4 exp((<i>E</i><sub>A</sub> − <i>E</i><sub>F</sub>)/<i>kT</i>)]</div>
+      <div class="f"><i>n</i> = <i>N</i><sub>c</sub> 𝓕<sub>1/2</sub>((<i>E</i><sub>F</sub> − <i>E</i><sub>c</sub>)/<i>kT</i>)   — Fermi–Dirac (Aymerich-Humet approx.) or Boltzmann exp(·)</div></div>
+    <div class="eq"><h3>Built-in voltage (homo- and heterojunction, Anderson model)</h3>
+      <div class="f"><i>qV</i><sub>bi</sub> = Φ<sub>p</sub> − Φ<sub>n</sub> = [χ<sub>p</sub> + <i>E</i><sub>g,p</sub> − (<i>E</i><sub>F</sub> − <i>E</i><sub>v</sub>)<sub>p</sub>] − [χ<sub>n</sub> + (<i>E</i><sub>c</sub> − <i>E</i><sub>F</sub>)<sub>n</sub>]</div>
+      <div class="f">Homojunction, Boltzmann:  <i>V</i><sub>bi</sub> = (<i>kT</i>/<i>q</i>) ln(<i>N</i><sub>A</sub><i>N</i><sub>D</sub> / <i>n</i><sub>i</sub>²)</div>
+      <div class="f">Δ<i>E</i><sub>c</sub> = χ<sub>p</sub> − χ<sub>n</sub>,   Δ<i>E</i><sub>v</sub> = (χ<sub>p</sub> + <i>E</i><sub>g,p</sub>) − (χ<sub>n</sub> + <i>E</i><sub>g,n</sub>)</div></div>
+    <div class="eq"><h3>Abrupt junction</h3>
+      <div class="f"><i>x</i><sub>n</sub> = √{ 2ε<sub>p</sub>ε<sub>n</sub><i>N</i><sub>A</sub>(<i>V</i><sub>bi</sub> − <i>V</i>) / [<i>qN</i><sub>D</sub>(ε<sub>p</sub><i>N</i><sub>A</sub> + ε<sub>n</sub><i>N</i><sub>D</sub>)] },   <i>x</i><sub>p</sub> = <i>x</i><sub>n</sub><i>N</i><sub>D</sub>/<i>N</i><sub>A</sub>,   |<i>E</i>|<sub>max</sub> = <i>qN</i><sub>D</sub><i>x</i><sub>n</sub>/ε<sub>n</sub></div>
+      <div class="f">φ(<i>x</i>) = <i>qN</i><sub>A</sub>(<i>x</i> + <i>x</i><sub>p</sub>)²/2ε<sub>p</sub>  for −<i>x</i><sub>p</sub> ≤ <i>x</i> &lt; 0;   φ(<i>x</i>) = (<i>V</i><sub>bi</sub> − <i>V</i>) − <i>qN</i><sub>D</sub>(<i>x</i><sub>n</sub> − <i>x</i>)²/2ε<sub>n</sub>  for 0 ≤ <i>x</i> ≤ <i>x</i><sub>n</sub></div></div>
+    <div class="eq"><h3>Linearly graded junction</h3>
+      <div class="f"><i>W</i> = [12ε(<i>V</i><sub>bi</sub> − <i>V</i>)/<i>qa</i>]<sup>1/3</sup>,   <i>V</i><sub>bi</sub> = (2<i>kT</i>/<i>q</i>) ln(<i>aW</i>/2<i>n</i><sub>i</sub>),   |<i>E</i>|<sub>max</sub> = <i>qaW</i>²/8ε</div></div>
+    <div class="eq"><h3>p–i–n junction (ideal intrinsic layer of thickness d)</h3>
+      <div class="f"><i>V</i><sub>bi</sub> − <i>V</i> = <i>qN</i><sub>A</sub><i>x</i><sub>p</sub>²/2ε<sub>p</sub> + <i>qN</i><sub>A</sub><i>x</i><sub>p</sub><i>d</i>/ε<sub>i</sub> + <i>qN</i><sub>D</sub><i>x</i><sub>n</sub>²/2ε<sub>n</sub>,   <i>N</i><sub>A</sub><i>x</i><sub>p</sub> = <i>N</i><sub>D</sub><i>x</i><sub>n</sub>   (solved as a quadratic in <i>x</i><sub>p</sub>)</div>
+      <div class="f"><i>E</i><sub>i</sub> = <i>qN</i><sub>A</sub><i>x</i><sub>p</sub>/ε<sub>i</sub> (uniform),   <i>W</i> = <i>x</i><sub>p</sub> + <i>d</i> + <i>x</i><sub>n</sub>,   <i>C</i>/<i>A</i> = (<i>x</i><sub>p</sub>/ε<sub>p</sub> + <i>d</i>/ε<sub>i</sub> + <i>x</i><sub>n</sub>/ε<sub>n</sub>)<sup>−1</sup> → ε<sub>i</sub>/<i>d</i> for <i>d</i> ≫ <i>x</i><sub>p</sub>, <i>x</i><sub>n</sub></div>
+      <div class="f"><i>V</i><sub>BR</sub> + <i>V</i><sub>bi</sub> ≈ <i>E</i><sub>crit</sub><i>d</i> (thick i-layer);   <i>J</i><sub>gr0</sub> = <i>q</i>(<i>n</i><sub>i,p</sub><i>x</i><sub>p</sub> + <i>n</i><sub>i,i</sub><i>d</i> + <i>n</i><sub>i,n</sub><i>x</i><sub>n</sub>)/2τ<sub>0</sub></div></div>
+    <div class="eq"><h3>Capacitance, current, breakdown</h3>
+      <div class="f"><i>C</i>/<i>A</i> = (<i>x</i><sub>p</sub>/ε<sub>p</sub> + <i>x</i><sub>n</sub>/ε<sub>n</sub>)<sup>−1</sup></div>
+      <div class="f"><i>J</i> = <i>q</i>(<i>D</i><sub>n</sub><i>n</i><sub>p0</sub>/<i>L</i><sub>n</sub> + <i>D</i><sub>p</sub><i>p</i><sub>n0</sub>/<i>L</i><sub>p</sub>)(e<sup><i>qV</i>/<i>kT</i></sup> − 1) + (<i>qn</i><sub>i</sub><i>W</i>/2τ<sub>0</sub>)(e<sup><i>qV</i>/2<i>kT</i></sup> − 1),   <i>L</i> = √(<i>D</i>τ),  <i>D</i> = μ<i>kT</i>/<i>q</i></div>
+      <div class="f"><i>V</i><sub>BR</sub> ≈ (ε<i>E</i><sub>crit</sub>²/2<i>q</i>)(1/<i>N</i><sub>A</sub> + 1/<i>N</i><sub>D</sub>) − <i>V</i><sub>bi</sub>   (homojunction)</div>
+      <div class="f">μ(<i>N</i>,<i>T</i>) = [μ<sub>min</sub> + (μ<sub>max</sub> − μ<sub>min</sub>)/(1 + (<i>N</i>/<i>N</i><sub>ref</sub>)<sup>a</sup>)]·(<i>T</i>/300)<sup>−γ</sup>   (Caughey–Thomas)</div></div>
+    <div class="info">Assumptions: 1-D, depletion approximation, no interface states, polarization charge or tunneling; deep dopants are fully ionized inside the depletion region (DC). E<sub>crit</sub> is treated as doping-independent.</div>
+  </section>
+  <footer>PNJunction · standalone offline build · physics core mirrors the Python <code>pnjunction</code> package.</footer>
+</main>
+</div>
+
+<script>/*__PLOTLY__*/</script>
+<script>/*__PHYSICS__*/</script>
+<script>/*__UI__*/</script>
+</body>
+</html>
